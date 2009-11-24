@@ -12,6 +12,7 @@
  * 测试例子，同时打开两个页面，可以发现总是同时只能一个页面进入到锁区间的代码
  * @link http://code.google.com/p/phplock/
  * @author sunli
+ * @blog http://sunli.cnblogs.com
  * @svnversion  $Id$
  * @version v1.0 beta1
  * @license Apache License Version 2.0
