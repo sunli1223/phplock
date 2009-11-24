@@ -5,6 +5,7 @@
  * 他根据文件锁来模拟多个进程之间的锁定，效率不是非常高。如果文件建立在内存中，可以大大提高效率。
  * @link http://code.google.com/p/phplock/
  * @author sunli
+ * @blog http://sunli.cnblogs.com
  * @svnversion  $Id$
  * @version v1.0 beta1
  * @license Apache License Version 2.0
