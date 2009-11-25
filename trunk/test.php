@@ -2,7 +2,7 @@
 
 <html>
 <head>
-	<title>简单测试</title>
+<title>简单测试</title>
 </head>
 
 <body>
@@ -23,17 +23,57 @@ require 'class.phplock.php';
 
 $lock = new PHPLock ( 'lock/', 'lockname' );
 $lock->startLock ();
-$lock->startLock ();
+$status = $lock->Lock ();
+if (! $status) {
+	echo "加锁失败";
+	exit ();
+}
 //process code
 echo "<span>进入锁</span><br />\r\n";
-ob_end_flush();
-flush();
-ob_flush();
-sleep ( 5 ); //休眠20秒，模拟并发操作
+ob_end_flush ();
+flush ();
+ob_flush ();
+sleep ( 10 ); //休眠20秒，模拟并发操作
 echo "执行完成<br />\r\n";
 $lock->unlock ();
 $lock->endLock ();
 echo "释放锁完成<br />\r\n";
+/**
+ * cache操作
+ *
+ * @return $array
+ */
+function getCache($key) {
+	return $cache;
+}
+/**
+ * 设置缓存
+ *
+ * @param string $key
+ * @param array $value
+ */
+function setCache($key, $value) {
+
+}
+$key = 'cachekey';
+$cache = getCache ( $key );
+if (! $cache) {
+	//缓存不存在，开始加锁
+	$lock = new PHPLock ( 'lock/', $key );
+	$lock->startLock ();
+	$lock->startLock ();
+	//尝试判断缓存是否有数据，可能已经有访问重建缓存了，就不需要再次查询数据库
+	$cache = getCache ( $key );
+	if (! $cache) {
+		//数据库查询操作,代码省略了
+		$data = $dbdata;
+		setCache ( $key, $data );
+	}
+	//释放锁
+	$lock->unlock ();
+	$lock->endLock ();
+}
+
 ?>
 </body>
 </html>
