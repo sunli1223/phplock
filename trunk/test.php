@@ -58,15 +58,16 @@ function setCache($key, $value) {
 $key = 'cachekey';
 $cache = getCache ( $key );
 if (! $cache) {
-	//缓存不存在，开始加锁
+	echo "缓存不存在，开始加锁<br>";
 	$lock = new PHPLock ( 'lock/', $key );
 	$lock->startLock ();
-	$lock->startLock ();
+	$lock->Lock ();
 	//尝试判断缓存是否有数据，可能已经有访问重建缓存了，就不需要再次查询数据库
 	$cache = getCache ( $key );
 	if (! $cache) {
 		//数据库查询操作,代码省略了
 		$data = $dbdata;
+		sleep ( 5 ); //模拟耗时操作
 		setCache ( $key, $data );
 	}
 	//释放锁
