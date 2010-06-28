@@ -1,10 +1,10 @@
 <?php
 /**
- * PHPLock½ø³ÌËø
- * ±¾½ø³ÌËøÓÃÀ´½â¾öphpÔÚ²¢·¢Ê±ºòµÄËø¿ØÖÆ
- * Ëû¸ù¾ÝÎÄ¼þËøÀ´Ä£Äâ¶à¸ö½ø³ÌÖ®¼äµÄËø¶¨£¬Ð§ÂÊ²»ÊÇ·Ç³£¸ß¡£Èç¹ûÎÄ¼þ½¨Á¢ÔÚÄÚ´æÖÐ£¬¿ÉÒÔ´ó´óÌá¸ßÐ§ÂÊ¡£
- * PHPLOCKÔÚÊ¹ÓÃ¹ý³ÌÖÐ£¬»áÔÚÖ¸¶¨µÄÄ¿Â¼²úÉú$hashNum¸öÎÄ¼þÓÃÀ´²úÉú¶ÔÓ¦Á£¶ÈµÄËø¡£²»Í¬ËøÖ®¼ä¿ÉÒÔ²¢ÐÐÖ´ÐÐ¡£
- * ÕâÓÐµãÀàËÆmysqlµÄinnodbµÄÐÐ¼¶Ëø£¬²»Í¬ÐÐµÄ¸üÐÂ¿ÉÒÔ²¢·¢µÄÖ´ÐÐ¡£
+ * PHPLockè¿›ç¨‹é”
+ * æœ¬è¿›ç¨‹é”ç”¨æ¥è§£å†³phpåœ¨å¹¶å‘æ—¶å€™çš„é”æŽ§åˆ¶
+ * ä»–æ ¹æ®æ–‡ä»¶é”æ¥æ¨¡æ‹Ÿå¤šä¸ªè¿›ç¨‹ä¹‹é—´çš„é”å®šï¼Œæ•ˆçŽ‡ä¸æ˜¯éžå¸¸é«˜ã€‚å¦‚æžœæ–‡ä»¶å»ºç«‹åœ¨å†…å­˜ä¸­ï¼Œå¯ä»¥å¤§å¤§æé«˜æ•ˆçŽ‡ã€‚
+ * PHPLOCKåœ¨ä½¿ç”¨è¿‡ç¨‹ä¸­ï¼Œä¼šåœ¨æŒ‡å®šçš„ç›®å½•äº§ç”Ÿ$hashNumä¸ªæ–‡ä»¶ç”¨æ¥äº§ç”Ÿå¯¹åº”ç²’åº¦çš„é”ã€‚ä¸åŒé”ä¹‹é—´å¯ä»¥å¹¶è¡Œæ‰§è¡Œã€‚
+ * è¿™æœ‰ç‚¹ç±»ä¼¼mysqlçš„innodbçš„è¡Œçº§é”ï¼Œä¸åŒè¡Œçš„æ›´æ–°å¯ä»¥å¹¶å‘çš„æ‰§è¡Œã€‚
  * @link http://code.google.com/p/phplock/
  * @author sunli
  * @blog http://sunli.cnblogs.com
@@ -16,34 +16,38 @@
 
 class PHPLock {
 	/**
-	 * ËøÎÄ¼þÂ·¾¶
+	 * é”æ–‡ä»¶è·¯å¾„
 	 *
 	 * @var String
 	 */
 	private $path = null;
 	/**
-	 * ÎÄ¼þ¾ä±ú
+	 * æ–‡ä»¶å¥æŸ„
 	 *
 	 * @var resource 
 	 */
 	private $fp = null;
 	/**
-	 * ËøµÄÁ£¶È¿ØÖÆ£¬ÉèÖÃµÄÔ½´óÁ£¶ÈÔ½Ð¡
+	 * é”çš„ç²’åº¦æŽ§åˆ¶ï¼Œè®¾ç½®çš„è¶Šå¤§ç²’åº¦è¶Šå°
 	 *
 	 * @var int
 	 */
 	private $hashNum = 100;
+	private $name;
+	private $eAccelerator = false;
 	/**
-	 * ¹¹Ôìº¯Êý
+	 * æž„é€ å‡½æ•°
 	 *
-	 * @param string $path ËøµÄ´æ·ÅÄ¿Â¼£¬ÒÔ"/"½áÎ²
-	 * @param string $name ËøÃû³Æ£¬Ò»°ãÔÚ¶Ô×ÊÔ´¼ÓËøµÄÊ±ºò£¬»áÃüÃûÒ»¸öÃû×Ö£¬ÕâÑù²»Í¬µÄ×ÊÔ´¿ÉÒÔ²¢·¢µÄ½øÐÐ¡£
+	 * @param string $path é”çš„å­˜æ”¾ç›®å½•ï¼Œä»¥"/"ç»“å°¾
+	 * @param string $name é”åç§°ï¼Œä¸€èˆ¬åœ¨å¯¹èµ„æºåŠ é”çš„æ—¶å€™ï¼Œä¼šå‘½åä¸€ä¸ªåå­—ï¼Œè¿™æ ·ä¸åŒçš„èµ„æºå¯ä»¥å¹¶å‘çš„è¿›è¡Œã€‚
 	 */
 	public function __construct($path, $name) {
 		$this->path = $path . ($this->mycrc32 ( $name ) % $this->hashNum) . '.txt';
+		$this->eAccelerator = function_exists ( "eaccelerator_lock" );
+		$this->name = $name;
 	}
 	/**
-	 * crc32µÄ·â×°
+	 * crc32çš„å°è£…
 	 *
 	 * @param string $string
 	 * @return int
@@ -57,40 +61,52 @@ class PHPLock {
 		return $crc;
 	}
 	/**
-	 * ³õÊ¼»¯Ëø£¬ÊÇ¼ÓËøÇ°µÄ±ØÐë²½Öè
-	 * ´ò¿ªÒ»¸öÎÄ¼þ
+	 * åˆå§‹åŒ–é”ï¼Œæ˜¯åŠ é”å‰çš„å¿…é¡»æ­¥éª¤
+	 * æ‰“å¼€ä¸€ä¸ªæ–‡ä»¶
 	 *
 	 */
 	public function startLock() {
-		$this->fp = fopen ( $this->path, "w+" );
+		if (! $this->eAccelerator) {
+			$this->fp = fopen ( $this->path, "w+" );
+		}
 	}
 	/**
-	 * ¿ªÊ¼¼ÓËø
+	 * å¼€å§‹åŠ é”
 	 *
-	 * @return bool ¼ÓËø³É¹¦·µ»Øtrue,Ê§°Ü·µ»Øfalse
+	 * @return bool åŠ é”æˆåŠŸè¿”å›žtrue,å¤±è´¥è¿”å›žfalse
 	 */
 	public function lock() {
-		if ($this->fp === false) {
-			return false;
+		if (! $this->eAccelerator) {
+			if ($this->fp === false) {
+				return false;
+			}
+			return flock ( $this->fp, LOCK_EX );
+		} else {
+			return eaccelerator_lock ( $this->name );
 		}
-		return flock ( $this->fp, LOCK_EX );
 	}
 	/**
-	 * ÊÍ·ÅËø
+	 * é‡Šæ”¾é”
 	 *
 	 */
 	public function unlock() {
-		if ($this->fp !== false) {
-			flock ( $this->fp, LOCK_UN );
-			clearstatcache ();
+		if (! $this->eAccelerator) {
+			if ($this->fp !== false) {
+				flock ( $this->fp, LOCK_UN );
+				clearstatcache ();
+			}
+		} else {
+			return eaccelerator_unlock ( $this->name );
 		}
 	}
 	/**
-	 * ½áÊøËø¿ØÖÆ
+	 * ç»“æŸé”æŽ§åˆ¶
 	 *
 	 */
 	public function endLock() {
-		fclose ( $this->fp );
+		if (! $this->eAccelerator) {
+			fclose ( $this->fp );
+		}
 	}
 }
 
